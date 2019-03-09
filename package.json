@@ -4,7 +4,8 @@
   "description": "A simple IMDB crawler feeding a Series API",
   "main": "index.js",
   "scripts": {
-    "start": "serverless offline start"
+    "start": "serverless offline start",
+    "deploy": "serverless deploy"
   },
   "repository": {
     "type": "git",
