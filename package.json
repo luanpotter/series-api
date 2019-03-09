@@ -1,0 +1,27 @@
+{
+  "name": "series-api",
+  "version": "0.1.0",
+  "description": "A simple IMDB crawler feeding a Series API",
+  "main": "index.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luanpotter/series-api.git"
+  },
+  "keywords": [
+    "series",
+    "api",
+    "imdb",
+    "crawler",
+    "rest",
+    "json"
+  ],
+  "author": "Luan Nico",
+  "license": "MIT",
+  "private": "yes",
+  "bugs": {
+    "url": "https://github.com/luanpotter/series-api/issues"
+  },
+  "homepage": "https://github.com/luanpotter/series-api#readme"
+}
