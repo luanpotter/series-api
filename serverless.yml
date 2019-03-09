@@ -1,0 +1,15 @@
+service: series-api
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+
+functions:
+  app:
+    handler: index.handler
+    events:
+        - http: ANY /
+        - http: 'ANY {proxy+}'
+
+plugins:
+  - serverless-offline
