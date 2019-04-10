@@ -31,16 +31,19 @@ app.get('/admin/_addSeries', async (req, resp) => {
 });
 
 app.get('/admin/addSerie', async (req, resp) => {
-    const title = req.query.title
-    const season = req.query.season
+    const title = req.query.title;
+    const season = req.query.season;
+
+    console.log(`Running for ${{ title, season }}`);
     const { data } = await query({ title, season });
 
-    writeS3(`series/${title}/seasons/${season}`, { id: season })
-    writeS3(`series/${title}/seasons/${season}/episodes`, data)
+    writeS3(`series/${title}/seasons/${season}`, { id: season });
+    writeS3(`series/${title}/seasons/${season}/episodes`, data);
 
     data.forEach((episode) => writeS3(`series/${title}/seasons/${season}/episodes/${episode.id}`, episode));
 
-    resp.status(200);
+    console.log('Dispatched.');
+    resp.status(200).send('Ok, will do.');
 });
 
 app.get('/admin/seasons', (_, res) => {
