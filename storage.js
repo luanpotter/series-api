@@ -8,7 +8,7 @@ const read = file => {
 };
 
 const write = (file, content) => {
-    return s3.putObject({ Bucket: bucket, Key: file, Body: content }).promise();
+    return s3.putObject({ Bucket: bucket, Key: file, Body: JSON.stringify(content) }).promise();
 };
 
 module.exports = { bucket, read, write };
