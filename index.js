@@ -41,7 +41,7 @@ app.get('/admin/addSerie', async (req, resp) => {
         write(`${url}`, { id: season }),
         write(`${url}/episodes`, data),
     ];
-    ps.add(...data.map((episode) => write(`${url}/episodes/${episode.id}`, episode)));
+    ps.push(...data.map((episode) => write(`${url}/episodes/${episode.id}`, episode)));
 
     console.log('Dispatched. Waiting...');
     Promise.all(ps).then(() => {
