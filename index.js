@@ -1,9 +1,10 @@
 const serverless = require('serverless-http');
 const express = require('express');
-const AWS = require('aws-sdk');
 
 const { query } = require('./parser');
-const { read, write } = require('./storage.js');
+const { write } = require('./storage.js');
+
+const app = express();
 
 app.get('/', (_, res) => {
     const data = 'Hello, and welcome to the Series API!';
