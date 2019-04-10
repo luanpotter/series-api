@@ -2,10 +2,8 @@ const serverless = require('serverless-http');
 const express = require('express');
 const AWS = require('aws-sdk');
 
-const s3 = new AWS.S3();
-const app = express();
-
 const { query } = require('./parser');
+const { read, write } = require('./storage.js');
 
 app.get('/', (_, res) => {
     const data = 'Hello, and welcome to the Series API!';
@@ -34,28 +32,26 @@ app.get('/admin/addSerie', async (req, resp) => {
     const title = req.query.title;
     const season = req.query.season;
 
-    console.log(`Running for ${{ title, season }}`);
+    console.log(`Running for title: ${title}, season: ${season}`);
     const { data } = await query({ title, season });
 
-    writeS3(`series/${title}/seasons/${season}`, { id: season });
-    writeS3(`series/${title}/seasons/${season}/episodes`, data);
+    const url = `series/${title}/seasons/${season}`;
+    const ps = [
+        write(`${url}`, { id: season }),
+        write(`${url}/episodes`, data),
+    ];
+    ps.add(...data.map((episode) => write(`${url}/episodes/${episode.id}`, episode)));
 
-    data.forEach((episode) => writeS3(`series/${title}/seasons/${season}/episodes/${episode.id}`, episode));
-
-    console.log('Dispatched.');
-    resp.status(200).send('Ok, will do.');
+    console.log('Dispatched. Waiting...');
+    Promise.all(ps).then(() => {
+        console.log('Done!');
+        resp.status(200).send('Ok, will do.');
+    });
 });
 
 app.get('/admin/seasons', (_, res) => {
     const data = 'Hello, and welcome to the Series API!';
     res.status(200).send(data);
 });
-
-const writeS3 = (filename, content) => {
-    var bucketName = 'series-api';
-    var params = { Bucket: bucketName, Key: filename, Body: content };
-
-    return s3.putObject(params);
-}
 
 module.exports.handler = serverless(app);

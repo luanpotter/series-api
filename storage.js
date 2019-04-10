@@ -1,7 +1,7 @@
 const AWS = require('aws-sdk');
 const s3 = new AWS.S3();
 
-const bucket = 'series-api-files';
+const bucket = 'series-api';
 
 const read = file => {
     return s3.getObject({ Bucket: bucket, Key: file }).promise();
