@@ -12,7 +12,7 @@ const query = async info => {
 
     const episodes = Array.from($('#episodes_content div.list.detail.eplist div.list_item', listingHtml));
     const response = episodes.map(tag => ({
-        episodeNumber: $('.info meta[itemprop=episodeNumber]', tag).attr('content').trim(),
+        id: $('.info meta[itemprop=episodeNumber]', tag).attr('content').trim(),
         imdbId: extractImdbId($('.info > strong a', tag).attr('href').trim()),
         title: $('.info > strong a', tag).text().trim(),
         releaseDate: $('.info div.airdate', tag).text().trim(),

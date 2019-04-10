@@ -1,6 +1,8 @@
 const serverless = require('serverless-http');
 const express = require('express');
+const AWS = require('aws-sdk');
 
+const s3 = new AWS.S3();
 const app = express();
 
 const { query } = require('./parser');
@@ -10,12 +12,12 @@ app.get('/', (_, res) => {
     res.status(200).send(data);
 });
 
-app.get('/query', (req, resp) => {
+app.get('/admin/query', (req, resp) => {
     const data = { title: req.query.title, season: req.query.season };
     query(data).then(result => resp.status(200).send(JSON.stringify(result.data)));
 });
 
-app.get('/_addSeries', async (req, resp) => {
+app.get('/admin/_addSeries', async (req, resp) => {
     const title = req.query.title;
     const { seasons, data } = await query({ title, season: '1' });
     const numberSeasons = seasons.map(i => parseInt(i)).reduce((a, b) => a > b ? a : b);
@@ -28,9 +30,29 @@ app.get('/_addSeries', async (req, resp) => {
     resp.status(200).send(JSON.stringify(allSeasons));
 });
 
-app.get('/seasons', (_, res) => {
+app.get('/admin/addSerie', async (req, resp) => {
+    const title = req.query.title
+    const season = req.query.season
+    const { data } = await query({ title, season });
+
+    writeS3(`series/${title}/seasons/${season}`, { id: season })
+    writeS3(`series/${title}/seasons/${season}/episodes`, data)
+
+    data.forEach((episode) => writeS3(`series/${title}/seasons/${season}/episodes/${episode.id}`, episode));
+
+    resp.status(200);
+});
+
+app.get('/admin/seasons', (_, res) => {
     const data = 'Hello, and welcome to the Series API!';
     res.status(200).send(data);
 });
+
+const writeS3 = (filename, content) => {
+    var bucketName = 'series-api';
+    var params = { Bucket: bucketName, Key: filename, Body: content };
+
+    return s3.putObject(params);
+}
 
 module.exports.handler = serverless(app);
