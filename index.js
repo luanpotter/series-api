@@ -47,6 +47,9 @@ app.get('/admin/addSerie', async (req, resp) => {
     Promise.all(ps).then(() => {
         console.log('Done!');
         resp.status(200).send('Ok, will do.');
+    }).catch(ex => {
+        console.error('Error!', ex);
+        resp.status(500).send(JSON.stringify(ex));
     });
 });
 
