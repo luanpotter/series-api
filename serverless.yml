@@ -10,6 +10,8 @@ functions:
     events:
         - http: ANY /
         - http: 'ANY {proxy+}'
+    environment:
+      API_URL: ${env:API_URL}
 
 plugins:
   - serverless-offline

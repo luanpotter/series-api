@@ -4,12 +4,14 @@ const express = require('express');
 const { adminRoutes } = require('./admin');
 const { read } = require('./storage');
 
+const { API_URL } = require('./env');
+
 const app = express();
 
 adminRoutes(app);
 
 app.get('/', (_, res) => {
-    const data = 'Hello, and welcome to the Series API!';
+    const data = `Hello, and welcome to the Series API! My URL: ${API_URL}`;
     res.status(200).send(data);
 });
 
