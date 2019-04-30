@@ -38,6 +38,7 @@ const adminRoutes = app => {
 
         const url = `series/${title}`;
         await write(`${url}`, series);
+        await write(`${url}/seasons`, seasons.map(i => ({ id: parseInt(i) })));
 
         const ps = seasons.map(season => request('/admin/addSeason', { title, season }));
         resp.status(200).send(`Success, waiting for ${ps.length} promises.`);

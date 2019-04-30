@@ -15,7 +15,7 @@ app.get('/', (_, res) => {
     res.status(200).send(data);
 });
 
-app.get('/series/*', async (req, res) => {
+app.get(/^\/series(\/.*)?$/, async (req, res) => {
     try {
         const url = req.url.replace(/^\//g, '');
         console.log(`Requesting ${url}`);
