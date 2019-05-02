@@ -12,6 +12,7 @@ functions:
         - http: 'ANY {proxy+}'
     environment:
       API_URL: ${env:API_URL}
+      QUERY_SECRET: ${env:QUERY_SECRET}
 
 plugins:
   - serverless-offline
