@@ -1,6 +1,10 @@
+const moment = require('moment');
+
 const { query } = require('./parser');
 const { write } = require('./storage');
 const { request } = require('./request');
+
+const DATE_FORMAT = 'YYYY-MM-DD';
 
 const adminRoutes = app => {
     app.get('/admin/query', (req, resp) => {
@@ -29,34 +33,46 @@ const adminRoutes = app => {
         const { seasons, data } = await query({ title, season: '1' });
         const numberSeasons = seasons.map(i => parseInt(i)).reduce((a, b) => a > b ? a : b);
 
+        const startDate = data[0].releaseDate.format(DATE_FORMAT);
         const series = {
             title,
             displayName,
             numberSeasons,
-            releaseDate: data[0].releaseDate,
+            startDate,
+            _startDateDelta: 0,
         };
 
         const url = `series/${title}`;
         await write(`${url}`, series);
         await write(`${url}/seasons`, seasons.map(i => ({ id: parseInt(i) })));
 
-        const ps = seasons.map(season => request('/admin/addSeason', { title, season }));
+        const ps = seasons.map(season => request('/admin/addSeason', { title, season, startDate }));
         resp.status(200).send(`Success, waiting for ${ps.length} promises.`);
     });
 
     app.get('/admin/addSeason', async (req, resp) => {
         const title = req.query.title;
         const season = req.query.season;
+        const startDate = moment(req.query.startDate, DATE_FORMAT);
 
         console.log(`Running for title: ${title}, season: ${season}`);
         const { data } = await query({ title, season });
 
+        const seasonStart = data[0].releaseDate;
+        const seasonStartDelta = seasonStart.diff(startDate, 'd');
+
+        const enhancedData = data.map(d => ({
+            ...d,
+            releaseDate: d.releaseDate.format(DATE_FORMAT),
+            _releaseDateDelta: d.releaseDate.diff(startDate, 'd'),
+        }));
+
         const url = `series/${title}/seasons/${season}`;
         const ps = [
-            write(`${url}`, { id: season, releaseDate: data[0].releaseDate }),
-            write(`${url}/episodes`, data),
+            write(`${url}`, { id: season, releaseDate: seasonStart, _releaseDateDelta: seasonStartDelta }),
+            write(`${url}/episodes`, enhancedData),
         ];
-        ps.push(...data.map((episode) => write(`${url}/episodes/${episode.id}`, episode)));
+        ps.push(...enhancedData.map((episode) => write(`${url}/episodes/${episode.id}`, episode)));
 
         console.log('Dispatched. Waiting...');
         Promise.all(ps).then(() => {
