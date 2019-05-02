@@ -78,7 +78,7 @@ const adminRoutes = app => {
 
         const url = `series/${title}/seasons/${season}`;
         const ps = [
-            write(`${url}`, { id: season, releaseDate: seasonStart, _releaseDateDelta: seasonStartDelta }),
+            write(`${url}`, { id: season, releaseDate: seasonStart.format(DATE_FORMAT), _releaseDateDelta: seasonStartDelta }),
             write(`${url}/episodes`, enhancedData),
         ];
         ps.push(...enhancedData.map((episode) => write(`${url}/episodes/${episode.id}`, episode)));
