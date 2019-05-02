@@ -3,10 +3,19 @@ const moment = require('moment');
 const { query } = require('./parser');
 const { write } = require('./storage');
 const { request } = require('./request');
+const { QUERY_SECRET } = require('./env');
 
 const DATE_FORMAT = 'YYYY-MM-DD';
 
 const adminRoutes = app => {
+    app.use('/admin', (req, res, next) => {
+        if (req.query.secret !== QUERY_SECRET) {
+            res.status(403).send('Invalid secret, mate...');
+        } else {
+            next();
+        }
+    });
+
     app.get('/admin/query', (req, resp) => {
         const data = { title: req.query.title, season: req.query.season };
         query(data).then(result => resp.status(200).send(JSON.stringify(result.data)));
