@@ -36,3 +36,5 @@ Episode: {
     duration: [string] the duration of this episode, in human readable format (e.g., '2h 20min' or '50min')
 }
 ```
+
+Aditionally, for every route you can add a `mockDate` query parameter (in `YYYY-MM-DD` format). If not provide, all `releaseDates` (of all resources) will be unmangled. However, if provide, the dates will be changed in a specific way. It will return instead different dates such as the difference between the actual date and today is the same as it was if today was equal to the date. So for example, if you provide `mockDate` as the actual current date, nothing happens. If you provide yesterday, every `releaseDate` will be shifted one day to the future, and so on.
