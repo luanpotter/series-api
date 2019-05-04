@@ -4,6 +4,10 @@ provider:
   name: aws
   runtime: nodejs8.10
 
+custom:
+  apiGatewayCaching:
+    enabled: true
+
 functions:
   app:
     handler: index.handler
@@ -13,6 +17,11 @@ functions:
     environment:
       API_URL: ${env:API_URL}
       QUERY_SECRET: ${env:QUERY_SECRET}
+    caching:
+      enabled: true
+      cacheKeyParameters:
+        - name: request.url
 
 plugins:
   - serverless-offline
+  - serverless-api-gateway-caching
