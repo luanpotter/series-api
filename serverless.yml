@@ -4,10 +4,6 @@ provider:
   name: aws
   runtime: nodejs8.10
 
-custom:
-  apiGatewayCaching:
-    enabled: true
-
 functions:
   app:
     handler: index.handler
@@ -24,4 +20,3 @@ functions:
 
 plugins:
   - serverless-offline
-  - serverless-api-gateway-caching
