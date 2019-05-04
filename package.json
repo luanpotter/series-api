@@ -21,7 +21,7 @@
   ],
   "author": "Luan Nico",
   "license": "MIT",
-  "private": "yes",
+  "private": true,
   "bugs": {
     "url": "https://github.com/luanpotter/series-api/issues"
   },

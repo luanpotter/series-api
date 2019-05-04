@@ -1,7 +1,34 @@
-const { adminRoutes } = require('./admin');
+const moment = require('moment');
 const { read } = require('./storage');
 
 const { API_URL } = require('./env');
+const { isObject, isArray, DATE_FORMAT } = require('./utils');
+
+const mockDatesObj = (data, diff) => {
+    return Object.keys(data).reduce((result, key) => {
+        if (key === 'releaseDate') {
+            const actual = moment(data[key], DATE_FORMAT);
+            const mocked = actual.add(-diff, 'days');
+            result[key] = mocked.format(DATE_FORMAT);
+        } else {
+            result[key] = mockDates(data[key]);
+        }
+        return result;
+    }, {});
+};
+
+const mockDates = (data, diff) => {
+    if (!diff) {
+        return data;
+    }
+    if (isArray(data)) {
+        return data.map(e => mockDates(e, diff));
+    } else if (isObject(data)) {
+        return mockDatesObj(data, diff);
+    } else {
+        return data;
+    }
+};
 
 const mainRoutes = app => {
     app.get('/', (_, res) => {
@@ -11,11 +38,19 @@ const mainRoutes = app => {
 
     app.get(/^\/series(\/.*)?$/, async (req, res) => {
         try {
-            const url = req.url.replace(/^\//g, '');
+            const mockDate = req.query.mockDate;
+            const url = req.path.replace(/^\//g, '');
             console.log(`Requesting ${url}`);
-            const data = await read(url);
-            console.log(`Responding ${data}`);
-            res.status(200).type('json').send(data);
+
+            const data = JSON.parse(await read(url));
+            console.log(`Received ${JSON.stringify(data)}`);
+
+            const diff = mockDate ? moment().diff(moment(mockDate, DATE_FORMAT), 'days') : null;
+            diff && console.log(`Mocking with diff: ${diff}`);
+            const enhanced = mockDates(data, diff);
+            console.log(`Responding ${JSON.stringify(enhanced)}`);
+
+            res.status(200).type('json').send(JSON.stringify(enhanced));
         } catch (ex) {
             console.error('Could not found file', ex);
             res.status(404).send('Not found');

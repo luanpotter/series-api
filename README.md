@@ -24,3 +24,9 @@ Then, run only deploy script (configure your aws cli properly):
 ```bash
 ./cmds/deploy.sh
 ```
+
+You can use the `local.js` file to setup everything locally instead of using the API. It will be quicker and easier to see any errors, but you'll be required to have a aws cli configured with an account that has access to the bucket.
+
+```bash
+node local.js
+```
