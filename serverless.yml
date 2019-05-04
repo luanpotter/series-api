@@ -10,13 +10,6 @@ functions:
     events:
         - http: ANY /
         - http: 'ANY {proxy+}'
-    environment:
-      API_URL: ${env:API_URL}
-      QUERY_SECRET: ${env:QUERY_SECRET}
-    caching:
-      enabled: true
-      cacheKeyParameters:
-        - name: request.url
 
 plugins:
   - serverless-offline

@@ -30,7 +30,7 @@ const mockDates = (data, diff) => {
     }
 };
 
-const mainRoutes = app => {
+const routes = app => {
     app.get('/', (_, res) => {
         const data = `Hello, and welcome to the Series API! My URL: ${API_URL}`;
         res.status(200).send(data);
@@ -58,5 +58,5 @@ const mainRoutes = app => {
     });
 };
 
-module.exports = { mainRoutes };
+module.exports = { routes };
 

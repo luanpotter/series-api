@@ -5,7 +5,7 @@ const bucket = 'series-api';
 
 const read = file => {
     const params = { Bucket: bucket, Key: file };
-    return s3.getObject(params).promise().then(e => e.Body.toString('utf-8'));
+    return s3.getObject(params).promise().then(e => e.Body.toString('UTF-8'));
 };
 
 const write = (file, content) => {

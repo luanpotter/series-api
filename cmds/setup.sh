@@ -2,4 +2,4 @@
 
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 
-npm run start
+node ./setup.js

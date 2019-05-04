@@ -4,29 +4,30 @@ A AWS Lambda serverless express REST API to process, store and retrieve data fro
 
 ## Setup
 
-Run `npm install` on root folder. To run locally, use the start script:
+Run `npm install` on root folder.
+
+Be sure to download and install AWS CLI in order to configure your credentials file. That will allow the program to access the S3 bucket and also to deploy the function to Lambda.
+
+To setup the S3 bucket, just run the `setup.js` file with node, or run:
+
+```bash
+./cmds/setup.sh
+```
+
+This will scrap IMDB and populate the bucket with the required files.
+
+After that, you can run locally (but accessing S3):
 
 ```bash
 ./cmds/start.sh
 ```
 
-To deploy, first create a file called `cmds/config.properties` with two properties: the url for the deployed API and the query param secret key for the admin bit. Something like this:
-
-```bash
-api_url=http://localhost:3000
-query_secret=123
-```
-
-Currently there is a link to an encrypted file on my dot-keys folder, you can replace that to run for yourself.
-
-Then, run only deploy script (configure your aws cli properly):
+To deploy, run the deploy script:
 
 ```bash
 ./cmds/deploy.sh
 ```
 
-You can use the `local.js` file to setup everything locally instead of using the API. It will be quicker and easier to see any errors, but you'll be required to have a aws cli configured with an account that has access to the bucket.
+## API Spec
 
-```bash
-node local.js
-```
+The API specification can be seen on [this file](./APIS.md).

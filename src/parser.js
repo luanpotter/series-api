@@ -30,4 +30,18 @@ const query = async info => {
     return { seasons, data };
 };
 
-module.exports = { query };
+const tryQuery = async (info, { tries = 0 } = {}) => {
+    try {
+        return await query(info);
+    } catch (ex) {
+        console.error('Error on request', ex);
+        if (tries > 5) {
+            console.error('Exceed max number of retries, failing catastrophically.');
+            throw ex;
+        } else {
+            return await tryQuery(info, { tries: tries + 1 });
+        }
+    }
+};
+
+module.exports = { tryQuery, query };

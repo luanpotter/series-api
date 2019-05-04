@@ -1,7 +1,7 @@
-const { runLocally } = require('./src/local_controller');
+const { setup } = require('./src/admin');
 
 console.log('Running locally...');
-runLocally().then(() => {
+setup().then(() => {
     console.log('Success!');
 }).catch(ex => {
     console.log('Error!', ex);

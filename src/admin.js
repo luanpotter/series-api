@@ -1,60 +1,73 @@
-const ctrl = require('./admin_controller');
-const { query } = require('./parser');
-const { QUERY_SECRET } = require('./env');
-const { request } = require('./request');
+const { tryQuery } = require('./parser');
+const { write } = require('./storage');
+const { DATE_FORMAT } = require('./utils');
 
-const adminRoutes = app => {
-    app.use('/admin', (req, res, next) => {
-        if (req.query.secret !== QUERY_SECRET) {
-            res.status(403).send('Invalid secret, mate...');
-        } else {
-            next();
+const setup = async () => {
+    const ps = [];
+    const allSeries = [
+        { imdbId: 'tt0944947', displayName: 'Game of Thrones' },
+        { imdbId: 'tt6226232', displayName: 'Young Sheldon' },
+        { imdbId: 'tt0475784', displayName: 'Westworld' },
+        { imdbId: 'tt0411008', displayName: 'Lost' },
+        { imdbId: 'tt6468322', displayName: 'La Casa de Papel' },
+    ];
+    const allSeriesEnchanced = [];
+
+    console.log(`Adding a total of ${allSeries.length} series.`);
+
+    for (const { imdbId, displayName } of allSeries) {
+        console.log(`Parsing Series ${displayName}.`);
+
+        const { seasons, data } = await tryQuery({ title: imdbId, season: '1' });
+        const numberOfSeasons = seasons.map(i => parseInt(i)).reduce((a, b) => a > b ? a : b);
+        console.log(` + Found ${numberOfSeasons} seasons`);
+
+        const releaseDate = data[0].releaseDate.format(DATE_FORMAT);
+        const enhancedSeries = {
+            id: imdbId,
+            imdbId,
+            displayName,
+            numberOfSeasons,
+            releaseDate,
+        };
+        allSeriesEnchanced.push(enhancedSeries);
+        const seriesUrl = `series/${imdbId}`;
+
+        const enhancedSeasons = [];
+        for (let seasonNumber of seasons) {
+            console.log(` + Querying Season ${seasonNumber}`);
+            const { data } = await tryQuery({ title: imdbId, season: seasonNumber });
+            const episodeList = data.map(d => ({
+                ...d,
+                releaseDate: d.releaseDate.format(DATE_FORMAT),
+            }));
+            const numberOfEpisodes = episodeList.length;
+            console.log(` ++ Found ${numberOfEpisodes} episodes`);
+        
+            const seasonStart = data[0].releaseDate;
+            const seasonUrl = `${seriesUrl}/seasons/${seasonNumber}`;
+            const enhancedSeason = {
+                id: seasonNumber,
+                numberOfEpisodes,
+                releaseDate: seasonStart.format(DATE_FORMAT),
+            };
+            enhancedSeasons.push(enhancedSeason);
+
+            ps.push(write(`${seasonUrl}`, enhancedSeason));
+            ps.push(write(`${seasonUrl}/episodes`, episodeList));
+            ps.push(...episodeList.map((episode) => write(`${seasonUrl}/episodes/${episode.id}`, episode)));
         }
-    });
 
-    app.get('/admin/query', (req, resp) => {
-        const data = { title: req.query.title, season: req.query.season };
-        query(data).then(result => resp.status(200).send(JSON.stringify(result.data)));
-    });
+        ps.push(write(`${seriesUrl}/seasons`, enhancedSeasons));
+        ps.push(write(`${seriesUrl}`, enhancedSeries));
+    }
 
-    app.get('/admin/addAllSeries', async (req, resp) => {
-        try {
-            const allSeries = await ctrl.addAllSeries();
-            const ps = allSeries.map(s => request('/admin/addSeries', s));
-            resp.status(200).send(`Success, waiting for ${ps.length} promises.`);
-        } catch (ex) {
-            console.error('Error!', ex);
-            resp.status(500).send(JSON.stringify(ex));
-        }
-    });
-
-    app.get('/admin/addSeries', async (req, resp) => {
-        const title = req.query.title;
-        const displayName = req.query.displayName;
-
-        try {
-            const seasons = await ctrl.addSeries(title, displayName);
-            const ps = seasons.map(season => request('/admin/addSeason', { title, season }));
-            resp.status(200).send(`Success, waiting for ${ps.length} promises.`);
-        } catch (ex) {
-            console.error('Error!', ex);
-            resp.status(500).send(JSON.stringify(ex));
-        }
-    });
-
-    app.get('/admin/addSeason', async (req, resp) => {
-        const title = req.query.title;
-        const season = req.query.season;
-
-        try {
-            await ctrl.addSeason(title, season);
-            console.log('Done!');
-            resp.status(200).send('Ok!');
-        } catch (ex) {
-            console.error('Error!', ex);
-            resp.status(500).send(JSON.stringify(ex));
-        }
-    });
+    ps.push(write('series', allSeriesEnchanced));
+    console.log(`Waiting for ${ps.length} S3 files writing...`);
+    await Promise.all(ps);
+    console.log('Done.');
 };
 
-module.exports = { adminRoutes };
+module.exports = {
+    setup,
+};

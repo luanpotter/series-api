@@ -1,12 +1,9 @@
 const serverless = require('serverless-http');
 const express = require('express');
 
-const { adminRoutes } = require('./src/admin');
-const { mainRoutes } = require('./src/main');
+const { routes } = require('./src/app');
 
 const app = express();
-
-mainRoutes(app);
-adminRoutes(app);
+routes(app);
 
 module.exports.handler = serverless(app);
