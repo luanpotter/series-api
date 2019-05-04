@@ -1,8 +1,8 @@
-const { runEverything } = require('./src/setup');
+const { runLocally } = require('./src/local_controller');
 
 console.log('Running locally...');
-runEverything().then(() => {
-    console.log('Sucess!');
+runLocally().then(() => {
+    console.log('Success!');
 }).catch(ex => {
     console.log('Error!', ex);
 });

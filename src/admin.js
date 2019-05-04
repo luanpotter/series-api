@@ -1,4 +1,4 @@
-const setup = require('./setup');
+const ctrl = require('./admin_controller');
 const { query } = require('./parser');
 const { QUERY_SECRET } = require('./env');
 const { request } = require('./request');
@@ -19,7 +19,7 @@ const adminRoutes = app => {
 
     app.get('/admin/addAllSeries', async (req, resp) => {
         try {
-            const allSeries = await setup.addAllSeries();
+            const allSeries = await ctrl.addAllSeries();
             const ps = allSeries.map(s => request('/admin/addSeries', s));
             resp.status(200).send(`Success, waiting for ${ps.length} promises.`);
         } catch (ex) {
@@ -33,7 +33,7 @@ const adminRoutes = app => {
         const displayName = req.query.displayName;
 
         try {
-            const seasons = await setup.addSeries(title, displayName);
+            const seasons = await ctrl.addSeries(title, displayName);
             const ps = seasons.map(season => request('/admin/addSeason', { title, season }));
             resp.status(200).send(`Success, waiting for ${ps.length} promises.`);
         } catch (ex) {
@@ -47,7 +47,7 @@ const adminRoutes = app => {
         const season = req.query.season;
 
         try {
-            await setup.addSeason(title, season);
+            await ctrl.addSeason(title, season);
             console.log('Done!');
             resp.status(200).send('Ok!');
         } catch (ex) {

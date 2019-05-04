@@ -57,19 +57,8 @@ const addSeason = async (title, season) => {
     return Promise.all(ps);
 };
 
-const runEverything = async () => {
-    const allSeries = await addAllSeries();
-    const ps = allSeries.map(async ({ title, displayName }) => {
-        const seasons = await addSeries(title, displayName);
-        const ps = seasons.map(season => addSeason(title, season));
-        return Promise.all(ps);
-    });
-    await Promise.all(ps);
-};
-
 module.exports = {
     addAllSeries,
     addSeries,
     addSeason,
-    runEverything,
 };
