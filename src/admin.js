@@ -15,7 +15,7 @@ const setup = async () => {
     const allSeriesEnchanced = [];
 
     console.log(`Adding a total of ${allSeries.length} series.`);
-    let idx = 0;
+    let idx = 1;
 
     for (const { imdbId, title } of allSeries) {
         console.log(`Parsing Series ${title}.`);
@@ -26,7 +26,7 @@ const setup = async () => {
 
         const releaseDate = data[0].releaseDate.format(DATE_FORMAT);
         const enhancedSeries = {
-            id: idx++,
+            id: `${idx++}`,
             imdbId,
             title,
             numberOfSeasons,
