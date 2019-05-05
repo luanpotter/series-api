@@ -1,7 +1,6 @@
 const moment = require('moment');
 const { read } = require('./storage');
 
-const { API_URL } = require('./env');
 const { isObject, isArray, DATE_FORMAT } = require('./utils');
 
 const mockDatesObj = (data, diff) => {
@@ -32,7 +31,7 @@ const mockDates = (data, diff) => {
 
 const routes = app => {
     app.get('/', (_, res) => {
-        const data = `Hello, and welcome to the Series API! My URL: ${API_URL}`;
+        const data = `Hello, and welcome to the Series API! Specs: https://github.com/luanpotter/series-api/blob/master/APIS.md`;
         res.status(200).send(data);
     });
 

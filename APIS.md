@@ -1,5 +1,7 @@
 # API Specification
 
+## Routes
+
 This is the specification for the API. The following routes are available:
 
 ```
@@ -11,13 +13,15 @@ GET /series/:id/seasons/:id/episodes -> List<Episode> : list all episodes of a g
 GET /series/:id/seasons/:id/episodes/:id -> Episode : show details of a specific episode
 ```
 
-Where Series, Season and Episode refer to the following objects:
+## Models
+
+Above, Series, Season and Episode refer to the following objects:
 
 ```
 Series: {
-    id: [string] the id of this REST resource; it's equal to the title property
+    id: [string] the id of this REST resource
     imdbId: [string] the IMDB id of this series
-    displayName: [string] the name of this series
+    title: [string] the name of this series
     numberOfSeasons: [integer] the number of seasons of this series
     releaseDate: [string] the release date (of the first episode of first season) of this season, in the format YYYY-MM-DD
 }
@@ -37,4 +41,26 @@ Episode: {
 }
 ```
 
-Aditionally, for every route you can add a `mockDate` query parameter (in `YYYY-MM-DD` format). If not provide, all `releaseDates` (of all resources) will be unmangled. However, if provide, the dates will be changed in a specific way. It will return instead different dates such as the difference between the actual date and today is the same as it was if today was equal to the date. So for example, if you provide `mockDate` as the actual current date, nothing happens. If you provide yesterday, every `releaseDate` will be shifted one day to the future, and so on.
+## Mock Date
+
+Aditionally, for every route you can add a `mockDate` query parameter (in `YYYY-MM-DD` format). If not provide, all `releaseDates` (of all resources) will be unmangled. However, if provided, the dates will be changed in a specific way. It will return instead different dates such as the difference between the actual date and today is the same as it was if today was equal to the date. So for example, if you provide `mockDate` as the actual current date, nothing happens. If you provide yesterday, every `releaseDate` will be shifted one day to the future, and so on.
+
+## Examples
+
+Using curl and setting up a URL property with the deployed url, you can, for instance:
+
+Get the title of the third series:
+
+```bash
+curl -s $URL/series | jq -r '.[2].title'
+# > Westworld
+```
+
+Get the duration of S01E04 of Westworld:
+
+```bash
+curl -s $URL/series/2/seasons/1/episodes | jq -r '.[4].duration'
+# > 56min
+```
+
+And much more!
