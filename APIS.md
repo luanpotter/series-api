@@ -56,7 +56,7 @@ curl -s $URL/series | jq -r '.[2].title'
 # > Westworld
 ```
 
-Get the duration of S01E04 of Westworld:
+Get the duration of S01E05 of Westworld:
 
 ```bash
 curl -s $URL/series/3/seasons/1/episodes | jq -r '.[4].duration'
