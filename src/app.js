@@ -7,7 +7,7 @@ const mockDatesObj = (data, diff) => {
     return Object.keys(data).reduce((result, key) => {
         if (key === 'releaseDate') {
             const actual = moment(data[key], DATE_FORMAT);
-            const mocked = actual.add(-diff, 'days');
+            const mocked = actual.add(diff, 'days');
             result[key] = mocked.format(DATE_FORMAT);
         } else {
             result[key] = mockDates(data[key]);
