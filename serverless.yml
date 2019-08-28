@@ -9,7 +9,9 @@ functions:
     handler: index.handler
     events:
         - http: ANY /
+          cors: true
         - http: 'ANY {proxy+}'
+          cors: true
 
 plugins:
   - serverless-offline
