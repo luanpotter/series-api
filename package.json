@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/luanpotter/series-api#readme",
   "dependencies": {
-    "aws-sdk": "^2.518.0",
+    "aws-sdk": "^2.814.0",
     "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
